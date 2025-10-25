@@ -1,3 +1,3 @@
-module fantasy-ball-schedule_grid
+module fantasy-bball-schedule-grid
 
 go 1.25.1
