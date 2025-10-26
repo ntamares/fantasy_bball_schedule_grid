@@ -1,7 +1,7 @@
 <script>
   import { onMount } from "svelte";
   import nbaTeams from "../types/nbaTeams.js";
-  import { fetchGameDates } from "../api/dates.js";
+  import { fetchGameDates } from "../api/game_dates.js";
   import { fetchWeeklySchedule } from "../api/schedule.js";
   import { buildScheduleGrid } from "../utils/build_grid.js";
   import { formatDateHeaders } from "../utils/format_date_headers.js";
@@ -51,7 +51,7 @@
           <tr>
             <th class="team-header">Team</th>
             {#each dateHeaders as header}
-              <th class="date-header">{header.display}</th>
+              <th class="date-header">{header}</th>
             {/each}
           </tr>
         </thead>
@@ -75,7 +75,7 @@
     </div>
   </div>
 {/if}
-
+<!-- 
 <style>
   .schedule-container {
     padding: 1rem;
@@ -167,4 +167,4 @@
       min-width: 60px;
     }
   }
-</style>
+</style> -->

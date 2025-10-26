@@ -9,7 +9,7 @@ import (
 func GetGameDatesHandler(w http.ResponseWriter, r *http.Request) {
 	gameDates, err := services.GetGameDates()
 	if err != nil {
-		http.Error(w, "Failed to get schedule: "+err.Error(), http.StatusInternalServerError)
+		http.Error(w, "Failed to get game dates: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 

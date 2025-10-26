@@ -6,11 +6,12 @@ setup:
 	@cd client && npm install --save-dev concurrently
 
 dev:
-	@cd client && npx concurrently \
-		--names "backend,frontend" \
-		--prefix-colors "blue,green" \
-		"cd ../server && go run cmd/main.go" \
-		"cd . && npm run dev"
+	@echo "Starting backend server..."
+	@cd server && go run cmd/main.go &
+	@echo "Waiting for backend to start..."
+	@sleep 2
+	@echo "Starting frontend server..."
+	@cd client && npm run dev
 
 clean:
 	@cd server && go clean

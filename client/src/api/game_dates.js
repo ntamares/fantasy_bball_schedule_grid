@@ -1,7 +1,7 @@
-const API_BASE_URL = 'http://localhost:8080/api';
+import { config } from '../config/environment.js';
 
 export async function fetchGameDates() {
-    const url = `${API_BASE_URL}/dates`;
+    const url = `${config.apiBaseUrl}/gameDates`;
 
     try {
         const response = await fetch(url);
