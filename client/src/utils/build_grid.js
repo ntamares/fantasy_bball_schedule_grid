@@ -1,20 +1,28 @@
 export function buildScheduleGrid(teams, dates, scheduleData) {
     const grid = {};
 
+    // Initialize grid with team names
     teams.forEach(team => {
-        grid[team] = {};
-        // TODO remove?
+        grid[team.name] = {};
         dates.forEach(date => {
-            grid[team][date] = null;
+            grid[team.name][date] = null;
         });
     });
 
-    scheduleData.forEach(({ date, home, away }) => {
-        if (grid[home] && grid[home][date] !== undefined) {
-            grid[home][date] = `vs ${away}`;
+    // Process games from your actual JSON structure
+    scheduleData.forEach(game => {
+        const gameDate = game.scheduled;           // Use "scheduled" field
+        const homeTeamName = game.home.name;       // Extract nested home team name
+        const awayTeamName = game.away.name;       // Extract nested away team name
+
+        // Add home team entry
+        if (grid[homeTeamName] && grid[homeTeamName][gameDate] !== undefined) {
+            grid[homeTeamName][gameDate] = `vs ${game.away.alias}`;
         }
-        if (grid[away] && grid[away][date] !== undefined) {
-            grid[away][date] = `vs ${home}`;
+
+        // Add away team entry  
+        if (grid[awayTeamName] && grid[awayTeamName][gameDate] !== undefined) {
+            grid[awayTeamName][gameDate] = `@ ${game.home.alias}`;
         }
     });
 
@@ -31,7 +39,7 @@ export function buildScheduleGrid(teams, dates, scheduleData) {
 
     //     // Add away team entry
     //     if (grid[awayTeam]) {
-    //         grid[awayTeam][gameDate] = `@ ${homeTeam}`;
+    //         grid[awayTeam][gameDate] = `@ ${homeTeam}`;date
     //     }
     // });
 

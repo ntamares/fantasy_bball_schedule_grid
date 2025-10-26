@@ -61,10 +61,10 @@
               <td class="team-name">
                 <span class="team-full-name">{team.name}</span>
               </td>
-              {#each dateHeaders as header}
+              {#each gameDates as date}
                 <td class="game-cell">
                   <span class="team-abbr"
-                    >{gridData[team.abbr]?.[header.date] || "-"}</span
+                    >{gridData[team.name]?.[date] || "-"}</span
                   >
                 </td>
               {/each}
@@ -75,8 +75,14 @@
     </div>
   </div>
 {/if}
-<!-- 
+
 <style>
+  table,
+  th,
+  td {
+    border: 1px solid black;
+  }
+
   .schedule-container {
     padding: 1rem;
     max-width: 100%;
@@ -87,12 +93,13 @@
     overflow-x: auto;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid black; /* Example: 1px solid black border */
   }
 
   .schedule-grid {
     width: 100%;
     border-collapse: collapse;
-    background: white;
+    background: rgb(182, 201, 198);
     font-size: 0.875rem;
   }
 
@@ -105,7 +112,7 @@
 
   .team-header,
   .date-header {
-    background-color: #f8fafc;
+    background-color: #307dca;
     font-weight: 600;
     color: #374151;
     position: sticky;
@@ -167,4 +174,4 @@
       min-width: 60px;
     }
   }
-</style> -->
+</style>
