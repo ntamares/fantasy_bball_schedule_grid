@@ -5,13 +5,15 @@
   import { fetchWeeklySchedule } from "../api/schedule.js";
   import { buildScheduleGrid } from "../utils/build_grid.js";
   import { formatDateHeaders } from "../utils/format_date_headers.js";
+  import { getTeamGameCount } from "../utils/team_game_count.js";
   import LoadingSpinner from "./LoadingSpinner.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
 
   let scheduleData = $state(null);
   let gameDates = $state(null);
   let gridData = $state(null);
-  let dateHeaders = $state([]);
+  let dateHeaders = $state([]); // why empty array and not null
+  let teamGameCount = $state(null);
   let loading = $state(true);
   let error = $state(null);
 
@@ -26,9 +28,10 @@
       ]);
 
       gameDates = datesResult;
-      dateHeaders = formatDateHeaders(gameDates);
       scheduleData = scheduleResult;
+      dateHeaders = formatDateHeaders(gameDates);
       gridData = buildScheduleGrid(nbaTeams, gameDates, scheduleData);
+      teamGameCount = getTeamGameCount(scheduleData);
     } catch (err) {
       console.error("Error loading schedule data:", err);
       error = err.message;
@@ -50,6 +53,7 @@
         <thead>
           <tr>
             <th class="team-header">Team</th>
+            <th class="game-count-header"># of Games</th>
             {#each dateHeaders as header}
               <th class="date-header">{header}</th>
             {/each}
@@ -61,11 +65,16 @@
               <td class="team-name">
                 <span class="team-full-name">{team.name}</span>
               </td>
+              <td class="game-count">
+                <span>
+                  {teamGameCount[team.name]}
+                </span>
+              </td>
               {#each gameDates as date}
                 <td class="game-cell">
-                  <span class="team-abbr"
-                    >{gridData[team.name]?.[date] || "-"}</span
-                  >
+                  <span class="team-abbr">
+                    {gridData[team.name]?.[date] || "-"}
+                  </span>
                 </td>
               {/each}
             </tr>
@@ -91,8 +100,7 @@
 
   .table-wrapper {
     overflow-x: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid black; /* Example: 1px solid black border */
   }
 
@@ -105,19 +113,21 @@
 
   .schedule-grid th,
   .schedule-grid td {
-    padding: 0.5rem;
+    padding: 0.15rem;
     border: 1px solid #e2e8f0;
     text-align: center;
   }
 
   .team-header,
-  .date-header {
+  .date-header,
+  .game-count-header {
     background-color: #307dca;
     font-weight: 600;
-    color: #374151;
+    color: black;
     position: sticky;
     top: 0;
     z-index: 10;
+    font-size: 1.25em;
   }
 
   .team-header {
@@ -135,15 +145,22 @@
     min-width: 180px;
   }
 
+  .game-count {
+    background-color: #8db88c;
+    color: black;
+    font-size: 1.25em;
+  }
+
   .team-abbr {
-    font-weight: 600;
+    font-weight: 550;
     color: #1f2937;
     margin-right: 0.5rem;
+    font-size: 1.25em;
   }
 
   .team-full-name {
-    color: #6b7280;
-    font-size: 0.75rem;
+    color: black;
+    font-size: 1.15rem;
   }
 
   .game-cell {
