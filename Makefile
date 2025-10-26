@@ -1,7 +1,17 @@
-run:
-    go run server/cmd/main.go
+.PHONY: dev setup clean
 
-# test:
-#     go test ./server/internal/schedule/
+setup:
+	@cd server && go mod tidy
+	@cd client && npm install
+	@cd client && npm install --save-dev concurrently
 
-.PHONY: run
+dev:
+	@cd client && npx concurrently \
+		--names "backend,frontend" \
+		--prefix-colors "blue,green" \
+		"cd ../server && go run cmd/main.go" \
+		"cd . && npm run dev"
+
+clean:
+	@cd server && go clean
+	@cd client && rm -rf node_modules dist

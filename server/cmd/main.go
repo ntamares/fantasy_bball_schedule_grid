@@ -1,15 +1,7 @@
 package main
 
-import (
-	"fantasy-bball-schedule-grid/internal/schedule"
-	"fmt"
-	"log"
-)
+import "fantasy-bball-schedule-grid/internal/server"
 
 func main() {
-	games, err := schedule.FetchGames()
-	if err != nil {
-		log.Fatalf("Error fetching games: %v", err)
-	}
-	fmt.Println(games)
+	server.Run()
 }

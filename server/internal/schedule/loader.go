@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func GetMondayDate() time.Time {
+func getMondayDate() time.Time {
 	currentDate := time.Now()
 	currentDay := int(currentDate.Weekday())
 	daysFromMonday := (currentDay + 6) % 7
@@ -19,9 +19,9 @@ func GetMondayDate() time.Time {
 	return mondayDate
 }
 
-func GetWeeklyScheduleDates() []time.Time {
+func FetchGameDates() []time.Time {
 	dates := make([]time.Time, 0, 7)
-	monday := GetMondayDate()
+	monday := getMondayDate()
 
 	for i := 0; i < 7; i++ {
 		nextDate := monday.AddDate(0, 0, i)
@@ -33,9 +33,8 @@ func GetWeeklyScheduleDates() []time.Time {
 	return dates
 }
 
-func FetchGames() ([]models.Game, error) {
-	data, err := os.ReadFile("data/nba_schedule_2025_2026.json")
-
+func FetchWeeklySchedule() ([]models.Game, error) {
+	data, err := os.ReadFile("../data/nba_schedule_2025_2026.json")
 	if err != nil {
 		log.Printf("Error loading JSON: %v", err)
 		return nil, fmt.Errorf("failed to load JSON: %w", err)
@@ -43,18 +42,16 @@ func FetchGames() ([]models.Game, error) {
 
 	var schedule models.Schedule
 	err = json.Unmarshal(data, &schedule)
-
 	if err != nil {
 		log.Printf("Error parsing JSON: %v", err)
 		return nil, fmt.Errorf("failed to parse schedule from JSON: %w", err)
 	}
 
-	weeklyScheduleDates := GetWeeklyScheduleDates()
+	gameDates := FetchGameDates()
 	games := make([]models.Game, 0)
 
 	for _, game := range schedule.Games {
 		gameDate, err := time.Parse(time.RFC3339, game.Date)
-
 		if err != nil {
 			log.Printf("Error parsing JSON date: %v", err)
 			return nil, fmt.Errorf("failed to parse game date '%s': %w", game.Date, err)
@@ -63,7 +60,7 @@ func FetchGames() ([]models.Game, error) {
 		year, month, day := gameDate.Date()
 		gameDateTrunc := time.Date(year, month, day, 0, 0, 0, 0, time.UTC)
 
-		if slices.Contains(weeklyScheduleDates, gameDateTrunc) {
+		if slices.Contains(gameDates, gameDateTrunc) {
 			games = append(games, game)
 		}
 	}
