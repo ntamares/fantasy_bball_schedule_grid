@@ -1,44 +1,16 @@
 <script>
-  import { onMount } from "svelte";
   import nbaTeams from "../types/nbaTeams.js";
-  import { fetchGameDates } from "../api/game_dates.js";
-  import { fetchWeeklySchedule } from "../api/schedule.js";
-  import { buildScheduleGrid } from "../utils/build_grid.js";
-  import { formatDateHeaders } from "../utils/format_date_headers.js";
-  import { getTeamGameCount } from "../utils/team_game_count.js";
   import LoadingSpinner from "./LoadingSpinner.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
 
-  let scheduleData = $state(null);
-  let gameDates = $state(null);
-  let gridData = $state(null);
-  let dateHeaders = $state([]); // why empty array and not null
-  let teamGameCount = $state(null);
-  let loading = $state(true);
-  let error = $state(null);
+  let { gridData, dateHeaders, gameDates, teamGameCount, loading, error } =
+    $props();
 
-  onMount(async () => {
-    try {
-      loading = true;
-      error = null;
-
-      const [datesResult, scheduleResult] = await Promise.all([
-        fetchGameDates(),
-        fetchWeeklySchedule(),
-      ]);
-
-      gameDates = datesResult;
-      scheduleData = scheduleResult;
-      dateHeaders = formatDateHeaders(gameDates);
-      gridData = buildScheduleGrid(nbaTeams, gameDates, scheduleData);
-      teamGameCount = getTeamGameCount(scheduleData);
-    } catch (err) {
-      console.error("Error loading schedule data:", err);
-      error = err.message;
-    } finally {
-      loading = false;
-    }
-  });
+  function getGameCountClass(gameCount) {
+    if (gameCount <= 2) return "game-count-low";
+    if (gameCount === 3) return "game-count-medium";
+    return "game-count-high";
+  }
 </script>
 
 {#if loading}
@@ -66,7 +38,11 @@
                 <span class="team-full-name">{team.name}</span>
               </td>
               <td class="game-count">
-                <span>
+                <span
+                  class:game-count-low={teamGameCount[team.name] <= 2}
+                  class:game-count-medium={teamGameCount[team.name] === 3}
+                  class:game-count-high={teamGameCount[team.name] >= 4}
+                >
                   {teamGameCount[team.name]}
                 </span>
               </td>
@@ -137,7 +113,7 @@
   }
 
   .team-name {
-    background-color: #f8fafc;
+    background-color: #a4b0bd;
     position: sticky;
     left: 0;
     z-index: 5;
@@ -146,7 +122,7 @@
   }
 
   .game-count {
-    background-color: #8db88c;
+    background-color: #bcc6d4;
     color: black;
     font-size: 1.25em;
   }
@@ -171,6 +147,28 @@
   .game-cell:empty::after {
     content: "—";
     color: #d1d5db;
+  }
+
+  .game-count-low {
+    color: red;
+  }
+  .game-count-medium {
+    color: black;
+  }
+  .game-count-high {
+    color: green;
+  }
+
+  tbody tr:hover .team-name {
+    background-color: rgba(59, 130, 246, 0.2); /* Blue overlay on #f8fafc */
+  }
+
+  tbody tr:hover .game-count {
+    background-color: rgba(59, 130, 246, 0.15); /* Lighter overlay on #bcc6d4 */
+  }
+
+  tbody tr:hover .game-cell {
+    background-color: rgba(59, 130, 246, 0.1); /* Even lighter overlay */
   }
 
   @media (max-width: 768px) {

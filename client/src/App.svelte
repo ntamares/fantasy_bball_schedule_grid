@@ -1,9 +1,9 @@
 <script>
-  import ScheduleGrid from "./components/ScheduleGrid.svelte";
+  import WeeklySchedulePage from "./components/WeeklySchedulePage.svelte";
 </script>
 
 <main>
-  <ScheduleGrid />
+  <WeeklySchedulePage />
 </main>
 
 <style>

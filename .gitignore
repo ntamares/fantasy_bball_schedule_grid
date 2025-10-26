@@ -42,3 +42,6 @@ server/tmp/
 
 # OS
 Thumbs.db
+
+# Misc.
+features_to_implement.md
