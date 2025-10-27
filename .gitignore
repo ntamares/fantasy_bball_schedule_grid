@@ -39,9 +39,11 @@ server/*.dll
 server/*.so
 server/*.dylib
 server/tmp/
+server/reference/
+
+# Test files (keep for development but don't track in git)
+server/internal/espn/*_test.go
+server/internal/espn/espn_*_response.json
 
 # OS
 Thumbs.db
-
-# Misc.
-features_to_implement.md
