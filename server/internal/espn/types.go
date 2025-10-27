@@ -4,6 +4,30 @@ type FreeAgentResponse struct {
 	Players []CleanFreeAgent `json:"players"`
 }
 
+type RosterResponse struct {
+	Teams []CleanFantasyTeam `json:"teams"`
+}
+
+type CleanFantasyTeam struct {
+	ID      int                 `json:"id"`
+	Name    string              `json:"name"`
+	Abbrev  string              `json:"abbrev"`
+	Players []CleanRosterPlayer `json:"players"`
+}
+
+type CleanRosterPlayer struct {
+	ID                int           `json:"id"`
+	Name              string        `json:"name"`
+	Jersey            string        `json:"jersey"`
+	Position          string        `json:"position"`
+	EligiblePositions []string      `json:"eligiblePositions"`
+	Team              NBATeam       `json:"team"`
+	AverageStats      CleanStats    `json:"averageStats"`
+	Ownership         OwnershipInfo `json:"ownership"`
+	InjuryStatus      string        `json:"injuryStatus"`
+	IsActive          bool          `json:"isActive"`
+}
+
 type CleanFreeAgent struct {
 	ID                int           `json:"id"`
 	Name              string        `json:"name"`

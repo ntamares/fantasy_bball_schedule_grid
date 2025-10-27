@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"os"
 )
 
 var (
@@ -259,15 +258,13 @@ func (c *Client) GetFreeAgentsClean(size int) (*FreeAgentResponse, error) {
 }
 
 func (c *Client) GetFreeAgents(size int) (*FreeAgentsData, error) {
+	// Get raw JSON using the existing method
 	rawJSON, err := c.GetRawFreeAgents(size)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := os.WriteFile("espn_free_agents_response.json", rawJSON, 0644); err != nil {
-		fmt.Printf("Warning: could not write debug file: %v\n", err)
-	}
-
+	// Unmarshal to struct
 	var data FreeAgentsData
 	if err := json.Unmarshal(rawJSON, &data); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
