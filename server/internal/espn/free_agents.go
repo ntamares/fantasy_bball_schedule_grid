@@ -116,7 +116,7 @@ func GetNBATeam(teamID int) NBATeam {
 	return NBATeam{ID: teamID, Abbreviation: "UNK", City: "Unknown", Name: "Team", FullName: "Unknown Team"}
 }
 
-func ConvertStats(rawStats map[string]interface{}) map[string]float64 {
+func convertStats(rawStats map[string]interface{}) map[string]float64 {
 	convertedStats := make(map[string]float64)
 	for key, value := range rawStats {
 		if statName, exists := StatsMap[key]; exists && statName != "" {
@@ -128,7 +128,7 @@ func ConvertStats(rawStats map[string]interface{}) map[string]float64 {
 	return convertedStats
 }
 
-func ConvertToCleanResponse(rawData *FreeAgentsData) *FreeAgentResponse {
+func convertToCleanResponse(rawData *freeAgentsData) *FreeAgentResponse {
 	cleanPlayers := make([]CleanFreeAgent, 0, len(rawData.Players))
 
 	for _, entry := range rawData.Players {
@@ -166,7 +166,7 @@ func formatStatus(status string) string {
 	}
 }
 
-func convertPlayerStats(rawStats []PlayerStats) CleanStats {
+func convertPlayerStats(rawStats []playerStats) CleanStats {
 	stats := CleanStats{}
 
 	if len(rawStats) == 0 {
@@ -254,18 +254,16 @@ func (c *Client) GetFreeAgentsClean(size int) (*FreeAgentResponse, error) {
 		return nil, err
 	}
 
-	return ConvertToCleanResponse(rawData), nil
+	return convertToCleanResponse(rawData), nil
 }
 
-func (c *Client) GetFreeAgents(size int) (*FreeAgentsData, error) {
-	// Get raw JSON using the existing method
+func (c *Client) GetFreeAgents(size int) (*freeAgentsData, error) {
 	rawJSON, err := c.GetRawFreeAgents(size)
 	if err != nil {
 		return nil, err
 	}
 
-	// Unmarshal to struct
-	var data FreeAgentsData
+	var data freeAgentsData
 	if err := json.Unmarshal(rawJSON, &data); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}

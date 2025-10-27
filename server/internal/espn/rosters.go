@@ -59,10 +59,10 @@ func (c *Client) GetRostersClean() (*RosterResponse, error) {
 		return nil, err
 	}
 
-	return ConvertToCleanRosterResponse(leagueData), nil
+	return convertToCleanRosterResponse(leagueData), nil
 }
 
-func ConvertToCleanRosterResponse(rawData *LeagueData) *RosterResponse {
+func convertToCleanRosterResponse(rawData *LeagueData) *RosterResponse {
 	cleanTeams := make([]CleanFantasyTeam, 0, len(rawData.FantasyTeams))
 
 	for _, team := range rawData.FantasyTeams {

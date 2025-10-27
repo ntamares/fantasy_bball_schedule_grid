@@ -84,7 +84,13 @@ type NBATeam struct {
 	FullName     string `json:"fullName"`
 }
 
-type PlayerStats struct {
+type OwnershipInfo struct {
+	PercentOwned   float64 `json:"percentOwned"`
+	PercentStarted float64 `json:"percentStarted"`
+	PercentChange  float64 `json:"percentChange"`
+}
+
+type playerStats struct {
 	SeasonID        int                    `json:"seasonId"`
 	SplitTypeID     int                    `json:"statSplitTypeId"`
 	SourceID        int                    `json:"statSourceId"`
@@ -95,46 +101,40 @@ type PlayerStats struct {
 	RawTotalStats   map[string]interface{} `json:"stats"`
 }
 
-func (ps *PlayerStats) GetAverageStats() map[string]float64 {
-	return ConvertStats(ps.RawAverageStats)
+func (ps *playerStats) GetAverageStats() map[string]float64 {
+	return convertStats(ps.RawAverageStats)
 }
 
-func (ps *PlayerStats) GetTotalStats() map[string]float64 {
-	return ConvertStats(ps.RawTotalStats)
-}
-
-type OwnershipInfo struct {
-	PercentOwned   float64 `json:"percentOwned"`
-	PercentStarted float64 `json:"percentStarted"`
-	PercentChange  float64 `json:"percentChange"`
+func (ps *playerStats) GetTotalStats() map[string]float64 {
+	return convertStats(ps.RawTotalStats)
 }
 
 type LeagueData struct {
-	FantasyTeams []FantasyTeam `json:"teams"`
+	FantasyTeams []fantasyTeam `json:"teams"`
 }
 
-type FantasyTeam struct {
+type fantasyTeam struct {
 	ID     int    `json:"id"`
 	Name   string `json:"name"`
 	Abbrev string `json:"abbrev"`
-	Roster Roster `json:"roster"`
+	Roster roster `json:"roster"`
 }
 
-type Roster struct {
-	Entries []RosterEntry `json:"entries"`
+type roster struct {
+	Entries []rosterEntry `json:"entries"`
 }
 
-type RosterEntry struct {
+type rosterEntry struct {
 	PlayerID        int             `json:"playerId"`
-	PlayerPoolEntry PlayerPoolEntry `json:"playerPoolEntry"`
+	PlayerPoolEntry playerPoolEntry `json:"playerPoolEntry"`
 }
 
-type PlayerPoolEntry struct {
+type playerPoolEntry struct {
 	ID     int    `json:"id"`
-	Player Player `json:"player"`
+	Player player `json:"player"`
 }
 
-type Player struct {
+type player struct {
 	ID                int           `json:"id"`
 	FullName          string        `json:"fullName"`
 	FirstName         string        `json:"firstName"`
@@ -146,18 +146,18 @@ type Player struct {
 	Injured           bool          `json:"injured"`
 	InjuryStatus      string        `json:"injuryStatus"`
 	Active            bool          `json:"active"`
-	Stats             []PlayerStats `json:"stats"`
+	Stats             []playerStats `json:"stats"`
 	Ownership         OwnershipInfo `json:"ownership"`
 }
 
-type FreeAgentsData struct {
-	Players []FreeAgentEntry `json:"players"`
+type freeAgentsData struct {
+	Players []freeAgentEntry `json:"players"`
 }
 
-type FreeAgentEntry struct {
+type freeAgentEntry struct {
 	ID                int    `json:"id"`
 	Status            string `json:"status"`
-	Player            Player `json:"player"`
+	Player            player `json:"player"`
 	OnTeamId          int    `json:"onTeamId"`
 	KeepValue         int    `json:"keeperValue"`
 	DraftAuctionValue int    `json:"draftAuctionValue"`
