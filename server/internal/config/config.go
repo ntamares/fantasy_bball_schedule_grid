@@ -27,11 +27,26 @@ func Load() *Config {
 		env = "development"
 	}
 
-	envFile := ".env." + env
-	if err := godotenv.Load(envFile); err != nil {
-		if err := godotenv.Load(); err != nil {
-			log.Printf("Warning: Could not load .env file: %v", err)
+	// Try loading .env files from multiple possible locations
+	envFiles := []string{
+		".env." + env,
+		".env",
+		"../.env." + env,
+		"../.env",
+		"../../.env." + env,
+		"../../.env",
+	}
+
+	envLoaded := false
+	for _, envFile := range envFiles {
+		if err := godotenv.Load(envFile); err == nil {
+			envLoaded = true
+			break
 		}
+	}
+
+	if !envLoaded {
+		log.Printf("Warning: Could not load .env file from any location")
 	}
 
 	config := &Config{
@@ -40,10 +55,9 @@ func Load() *Config {
 		LogLevel:    getEnv("LOG_LEVEL", getDefaultLogLevel(env)),
 		Environment: env,
 		LeagueID:    parseInt(getEnv("ESPN_LEAGUE_ID", "0")),
-		// TODO make function to return bball year based on current date for Year default
-		Year:   parseInt(getEnv("ESPN_SEASON_YEAR", "2026")),
-		ESPNS2: getEnv("ESPN_S2_COOKIE", ""),
-		SWID:   getEnv("ESPN_SWID_COOKIE", ""),
+		Year:        parseInt(getEnv("ESPN_SEASON_YEAR", "2026")),
+		ESPNS2:      getEnv("ESPN_S2_COOKIE", ""),
+		SWID:        getEnv("ESPN_SWID_COOKIE", ""),
 	}
 
 	corsOrigins := getEnv("CORS_ORIGINS", getDefaultCORSOrigins(env))

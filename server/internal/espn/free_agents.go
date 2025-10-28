@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"sort"
 )
 
 var (
@@ -150,16 +149,6 @@ func convertToCleanResponse(rawData *freeAgentsData) *FreeAgentResponse {
 
 		cleanPlayers = append(cleanPlayers, cleanPlayer)
 	}
-
-	// Sort players by NBA team abbreviation for consistent grouping on frontend
-	sort.Slice(cleanPlayers, func(i, j int) bool {
-		// Primary sort: Team abbreviation (alphabetical)
-		if cleanPlayers[i].Team.Abbreviation != cleanPlayers[j].Team.Abbreviation {
-			return cleanPlayers[i].Team.Abbreviation < cleanPlayers[j].Team.Abbreviation
-		}
-		// Secondary sort: Player name (alphabetical within same team)
-		return cleanPlayers[i].Name < cleanPlayers[j].Name
-	})
 
 	return &FreeAgentResponse{
 		Players: cleanPlayers,
@@ -309,7 +298,15 @@ func (c *Client) FetchRawFreeAgents() ([]byte, error) {
 			"filterStatus": map[string]interface{}{
 				"value": []string{"FREEAGENT", "WAIVERS"},
 			},
-			// "limit": size,
+			"filterProTeamIds": map[string]interface{}{
+				"value": func() []int {
+					ids := make([]int, 30)
+					for i := 0; i < 30; i++ {
+						ids[i] = i + 1
+					}
+					return ids
+				}(),
+			},
 			"sortPercOwned": map[string]interface{}{
 				"sortPriority": 1,
 				"sortAsc":      false,
