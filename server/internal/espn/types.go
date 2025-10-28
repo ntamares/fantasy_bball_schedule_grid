@@ -4,6 +4,10 @@ type FreeAgentResponse struct {
 	Players []CleanFreeAgent `json:"players"`
 }
 
+type FreeAgentGroupedResponse struct {
+	TeamGroups []FreeAgentTeam `json:"teamGroups"`
+}
+
 type FreeAgentTeam struct {
 	Team    NBATeam          `json:"team"`
 	Players []CleanFreeAgent `json:"players"`

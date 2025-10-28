@@ -131,3 +131,88 @@ func TestGetFreeAgents(t *testing.T) {
 
 	fmt.Printf("\n✅ Test completed successfully! Retrieved %d real players from ESPN\n", len(result.Players))
 }
+
+func TestGetFreeAgentsGrouped(t *testing.T) {
+	fmt.Println("=== MAKING REAL ESPN API CALL FOR GROUPED DATA ===")
+	fmt.Println("Using GetFreeAgentsGrouped service with real credentials from .env")
+
+	result, err := GetFreeAgentsGrouped()
+	if err != nil {
+		t.Fatalf("Expected no error, got %v", err)
+	}
+
+	if result == nil {
+		t.Fatal("Expected result to not be nil")
+	}
+
+	fmt.Printf("\n✅ Successfully fetched grouped data from ESPN API!\n")
+	fmt.Printf("Total teams with free agents: %d\n", len(result.TeamGroups))
+
+	// Calculate total players across all teams
+	totalPlayers := 0
+	for _, teamGroup := range result.TeamGroups {
+		totalPlayers += len(teamGroup.Players)
+	}
+	fmt.Printf("Total players across all teams: %d\n", totalPlayers)
+
+	// Save grouped data to JSON file
+	timestamp := time.Now().Format("2006-01-02_15-04-05")
+	filename := fmt.Sprintf("test_data/real_grouped_free_agents_%s.json", timestamp)
+
+	jsonData, err := json.MarshalIndent(result, "", "  ")
+	if err != nil {
+		t.Fatalf("Failed to marshal JSON: %v", err)
+	}
+
+	err = os.WriteFile(filename, jsonData, 0644)
+	if err != nil {
+		t.Fatalf("Failed to write file: %v", err)
+	}
+
+	fmt.Printf("\n💾 Saved real grouped ESPN data to: %s\n", filename)
+
+	fmt.Println("\n=== TEAMS WITH FREE AGENTS (Sorted Alphabetically) ===")
+	for i, teamGroup := range result.TeamGroups {
+		fmt.Printf("\n🏀 TEAM #%d: %s (%s)\n", i+1, teamGroup.Team.FullName, teamGroup.Team.Abbreviation)
+		fmt.Printf("   Players: %d\n", len(teamGroup.Players))
+
+		// Show first few players for this team
+		maxPlayers := 3
+		if len(teamGroup.Players) < maxPlayers {
+			maxPlayers = len(teamGroup.Players)
+		}
+
+		for j := 0; j < maxPlayers; j++ {
+			player := teamGroup.Players[j]
+			fmt.Printf("   - %s (%s) - %s - %.1f%% owned\n",
+				player.Name, player.Position, player.Status, player.Ownership.PercentOwned)
+		}
+
+		if len(teamGroup.Players) > maxPlayers {
+			fmt.Printf("   - ... and %d more players\n", len(teamGroup.Players)-maxPlayers)
+		}
+	}
+
+	// Test assertions
+	if len(result.TeamGroups) == 0 {
+		t.Error("Expected at least one team group")
+	}
+
+	// Verify teams are sorted alphabetically by FullName
+	for i := 1; i < len(result.TeamGroups); i++ {
+		prevTeam := result.TeamGroups[i-1].Team.FullName
+		currentTeam := result.TeamGroups[i].Team.FullName
+		if prevTeam > currentTeam {
+			t.Errorf("Teams not sorted alphabetically: %s should come after %s", prevTeam, currentTeam)
+		}
+	}
+
+	// Verify each team has at least one player
+	for _, teamGroup := range result.TeamGroups {
+		if len(teamGroup.Players) == 0 {
+			t.Errorf("Team %s has no players", teamGroup.Team.FullName)
+		}
+	}
+
+	fmt.Printf("\n✅ Grouped test completed successfully! Retrieved %d teams with players from ESPN\n", len(result.TeamGroups))
+}

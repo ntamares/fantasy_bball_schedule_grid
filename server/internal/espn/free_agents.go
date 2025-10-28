@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 )
 
 var (
@@ -155,6 +156,32 @@ func convertToCleanResponse(rawData *freeAgentsData) *FreeAgentResponse {
 	}
 }
 
+func convertToGroupedResponse(rawData *freeAgentsData) *FreeAgentGroupedResponse {
+	cleanResponse := convertToCleanResponse(rawData)
+	teamPlayerMap := make(map[int][]CleanFreeAgent)
+	for _, player := range cleanResponse.Players {
+		teamId := player.Team.ID
+		teamPlayerMap[teamId] = append(teamPlayerMap[teamId], player)
+	}
+
+	var teamGroups []FreeAgentTeam
+	for teamId, players := range teamPlayerMap {
+		team := GetNBATeam(teamId)
+		teamGroups = append(teamGroups, FreeAgentTeam{
+			Team:    team,
+			Players: players,
+		})
+	}
+
+	sort.Slice(teamGroups, func(i, j int) bool {
+		return teamGroups[i].Team.FullName < teamGroups[j].Team.FullName
+	})
+
+	return &FreeAgentGroupedResponse{
+		TeamGroups: teamGroups,
+	}
+}
+
 func formatStatus(status string) string {
 	switch status {
 	case "FREEAGENT":
@@ -255,6 +282,15 @@ func (c *Client) FetchFreeAgentsClean() (*FreeAgentResponse, error) {
 	}
 
 	return convertToCleanResponse(rawData), nil
+}
+
+func (c *Client) FetchFreeAgentsGrouped() (*FreeAgentGroupedResponse, error) {
+	rawData, err := c.FetchFreeAgents()
+	if err != nil {
+		return nil, err
+	}
+
+	return convertToGroupedResponse(rawData), nil
 }
 
 func (c *Client) FetchFreeAgents() (*freeAgentsData, error) {
