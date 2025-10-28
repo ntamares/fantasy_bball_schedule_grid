@@ -101,11 +101,11 @@ type playerStats struct {
 	RawTotalStats   map[string]interface{} `json:"stats"`
 }
 
-func (ps *playerStats) GetAverageStats() map[string]float64 {
+func (ps *playerStats) FetchAverageStats() map[string]float64 {
 	return convertStats(ps.RawAverageStats)
 }
 
-func (ps *playerStats) GetTotalStats() map[string]float64 {
+func (ps *playerStats) FetchTotalStats() map[string]float64 {
 	return convertStats(ps.RawTotalStats)
 }
 

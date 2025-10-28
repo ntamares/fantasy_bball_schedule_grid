@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"sort"
 )
 
 var (
@@ -150,6 +151,16 @@ func convertToCleanResponse(rawData *freeAgentsData) *FreeAgentResponse {
 		cleanPlayers = append(cleanPlayers, cleanPlayer)
 	}
 
+	// Sort players by NBA team abbreviation for consistent grouping on frontend
+	sort.Slice(cleanPlayers, func(i, j int) bool {
+		// Primary sort: Team abbreviation (alphabetical)
+		if cleanPlayers[i].Team.Abbreviation != cleanPlayers[j].Team.Abbreviation {
+			return cleanPlayers[i].Team.Abbreviation < cleanPlayers[j].Team.Abbreviation
+		}
+		// Secondary sort: Player name (alphabetical within same team)
+		return cleanPlayers[i].Name < cleanPlayers[j].Name
+	})
+
 	return &FreeAgentResponse{
 		Players: cleanPlayers,
 	}
@@ -173,7 +184,7 @@ func convertPlayerStats(rawStats []playerStats) CleanStats {
 		return stats
 	}
 
-	avgStats := rawStats[0].GetAverageStats()
+	avgStats := rawStats[0].FetchAverageStats()
 	statMappings := []struct {
 		espnKey   string
 		statField *float64
@@ -248,8 +259,8 @@ func getEligiblePositions(eligibleSlots []int) []string {
 
 	return positions
 }
-func (c *Client) GetFreeAgentsClean(size int) (*FreeAgentResponse, error) {
-	rawData, err := c.GetFreeAgents(size)
+func (c *Client) FetchFreeAgentsClean() (*FreeAgentResponse, error) {
+	rawData, err := c.FetchFreeAgents()
 	if err != nil {
 		return nil, err
 	}
@@ -257,8 +268,8 @@ func (c *Client) GetFreeAgentsClean(size int) (*FreeAgentResponse, error) {
 	return convertToCleanResponse(rawData), nil
 }
 
-func (c *Client) GetFreeAgents(size int) (*freeAgentsData, error) {
-	rawJSON, err := c.GetRawFreeAgents(size)
+func (c *Client) FetchFreeAgents() (*freeAgentsData, error) {
+	rawJSON, err := c.FetchRawFreeAgents()
 	if err != nil {
 		return nil, err
 	}
@@ -271,7 +282,7 @@ func (c *Client) GetFreeAgents(size int) (*freeAgentsData, error) {
 	return &data, nil
 }
 
-func (c *Client) GetRawFreeAgents(size int) ([]byte, error) {
+func (c *Client) FetchRawFreeAgents() ([]byte, error) {
 	baseURL := fmt.Sprintf("https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/%d/segments/0/leagues/%d", c.Year, c.LeagueID)
 
 	u, err := url.Parse(baseURL)
@@ -298,7 +309,7 @@ func (c *Client) GetRawFreeAgents(size int) ([]byte, error) {
 			"filterStatus": map[string]interface{}{
 				"value": []string{"FREEAGENT", "WAIVERS"},
 			},
-			"limit": size,
+			// "limit": size,
 			"sortPercOwned": map[string]interface{}{
 				"sortPriority": 1,
 				"sortAsc":      false,

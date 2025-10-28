@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/joho/godotenv"
@@ -14,6 +15,10 @@ type Config struct {
 	CORSOrigins []string
 	LogLevel    string
 	Environment string
+	LeagueID    int
+	Year        int
+	ESPNS2      string
+	SWID        string
 }
 
 func Load() *Config {
@@ -34,6 +39,11 @@ func Load() *Config {
 		APIBaseURL:  getEnv("API_BASE_URL", getDefaultAPIURL(env)),
 		LogLevel:    getEnv("LOG_LEVEL", getDefaultLogLevel(env)),
 		Environment: env,
+		LeagueID:    parseInt(getEnv("ESPN_LEAGUE_ID", "0")),
+		// TODO make function to return bball year based on current date for Year default
+		Year:   parseInt(getEnv("ESPN_SEASON_YEAR", "2026")),
+		ESPNS2: getEnv("ESPN_S2_COOKIE", ""),
+		SWID:   getEnv("ESPN_SWID_COOKIE", ""),
 	}
 
 	corsOrigins := getEnv("CORS_ORIGINS", getDefaultCORSOrigins(env))
@@ -86,4 +96,12 @@ func getEnv(key, defaultValue string) string {
 		return value
 	}
 	return defaultValue
+}
+
+func parseInt(s string) int {
+	i, err := strconv.Atoi(s)
+	if err != nil {
+		log.Fatalf("Failed to parse integer: %s", s)
+	}
+	return i
 }

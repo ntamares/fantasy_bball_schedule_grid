@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-func (c *Client) GetRosters() (*LeagueData, error) {
-	rawJSON, err := c.GetRawRosters()
+func (c *Client) FetchFantasyTeamRosters() (*LeagueData, error) {
+	rawJSON, err := c.FetchRawFantasyTeamRosters()
 	if err != nil {
 		return nil, err
 	}
@@ -21,7 +21,7 @@ func (c *Client) GetRosters() (*LeagueData, error) {
 	return &leagueData, nil
 }
 
-func (c *Client) GetRawRosters() ([]byte, error) {
+func (c *Client) FetchRawFantasyTeamRosters() ([]byte, error) {
 	url := fmt.Sprintf("https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/%d/segments/0/leagues/%d?view=mTeam&view=mRoster", c.Year, c.LeagueID)
 
 	req, err := http.NewRequest("GET", url, nil)
@@ -53,8 +53,8 @@ func (c *Client) GetRawRosters() ([]byte, error) {
 	return body, nil
 }
 
-func (c *Client) GetRostersClean() (*RosterResponse, error) {
-	leagueData, err := c.GetRosters()
+func (c *Client) FetchFantasyTeamRostersClean() (*RosterResponse, error) {
+	leagueData, err := c.FetchFantasyTeamRosters()
 	if err != nil {
 		return nil, err
 	}
