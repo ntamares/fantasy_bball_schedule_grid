@@ -1,6 +1,5 @@
 <script>
   import { onMount } from "svelte";
-  import nbaTeams from "../types/nbaTeams.js";
   import { fetchFantasyTeamRosters } from "../api/fantasy_team_rosters.js";
 
   let fantasyTeamRosterData = $state(null);
@@ -11,10 +10,7 @@
     try {
       loading = true;
       error = null;
-
-      const fantasyTeamRosterResult = await fetchFantasyTeamRosters();
-
-      fantasyTeamRosterData = fantasyTeamRosterResult;
+      fantasyTeamRosterData = await fetchFantasyTeamRosters();
     } catch (err) {
       console.error("Error loading fantasy team roster data:", err);
       error = err.message;
@@ -24,6 +20,20 @@
   });
 </script>
 
-{JSON.stringify(fantasyTeamRosterData, null, 2)}
-
-<style></style>
+{#if loading}
+  <p>Loading...</p>
+{:else if error}
+  <p style="color: red;">Error: {error}</p>
+{:else if fantasyTeamRosterData?.teams}
+  {#each fantasyTeamRosterData.teams as team}
+    <h2>{team.name} (ID: {team.id})</h2>
+    {#if team.players}
+      {#each team.players as player}
+        <p>{player.name} - {player.position}</p>
+      {/each}
+    {/if}
+    <br />
+  {/each}
+{:else}
+  <p>No fantasy team data available.</p>
+{/if}

@@ -7,6 +7,8 @@
   import { buildScheduleGrid } from "../utils/build_grid.js";
   import { formatDateHeaders } from "../utils/format_date_headers.js";
   import { getTeamGameCount } from "../utils/team_game_count.js";
+  import FantasyTeamRosterSelection from "./FantasyTeamRosterSelection.svelte";
+  import FreeAgentList from "./FreeAgentList.svelte";
 
   let scheduleData = $state(null);
   let gameDates = $state(null);
@@ -40,13 +42,60 @@
   });
 </script>
 
-<ScheduleGrid
-  {gridData}
-  {dateHeaders}
-  {gameDates}
-  {teamGameCount}
-  {loading}
-  {error}
-/>
+<div class="container">
+  <div class="schedule-section">
+    <ScheduleGrid
+      {gridData}
+      {dateHeaders}
+      {gameDates}
+      {teamGameCount}
+      {loading}
+      {error}
+    />
+  </div>
+  <div class="roster-section">
+    <FantasyTeamRosterSelection />
+  </div>
+  <div class="fa-section">
+    <FreeAgentList />
+  </div>
+</div>
 
-<style></style>
+<style>
+  :global(body) {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    display: flex;
+    gap: 20px;
+    height: 100vh;
+    width: 100vw;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  .schedule-section {
+    flex: 3;
+    overflow: auto;
+    max-height: 100vh;
+  }
+
+  .roster-section {
+    flex: 1;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    padding: 20px;
+    overflow: auto;
+    max-height: 100vh;
+  }
+
+  .fa-section {
+    flex: 3;
+    padding: 20px;
+    overflow: auto;
+    max-height: 100vh;
+  }
+</style>
