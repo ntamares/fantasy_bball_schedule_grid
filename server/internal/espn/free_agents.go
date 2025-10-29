@@ -308,7 +308,7 @@ func (c *Client) FetchFreeAgents() (*freeAgentsData, error) {
 }
 
 func (c *Client) FetchRawFreeAgents() ([]byte, error) {
-	baseURL := fmt.Sprintf("https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/%d/segments/0/leagues/%d", c.Year, c.LeagueID)
+	baseURL := fmt.Sprintf("%d/seasons/%d/segments/0/leagues/%d", c.EspnApiBaseUrl, c.Year, c.LeagueID)
 
 	u, err := url.Parse(baseURL)
 	if err != nil {

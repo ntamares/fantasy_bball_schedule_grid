@@ -22,7 +22,7 @@ func (c *Client) FetchFantasyTeamRosters() (*LeagueData, error) {
 }
 
 func (c *Client) FetchRawFantasyTeamRosters() ([]byte, error) {
-	url := fmt.Sprintf("https://lm-api-reads.fantasy.espn.com/apis/v3/games/fba/seasons/%d/segments/0/leagues/%d?view=mTeam&view=mRoster", c.Year, c.LeagueID)
+	url := fmt.Sprintf("%s/seasons/%d/segments/0/leagues/%d?view=mTeam&view=mRoster", c.EspnApiBaseUrl, c.Year, c.LeagueID)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
