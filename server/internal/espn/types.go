@@ -35,6 +35,8 @@ type CleanRosterPlayer struct {
 	Ownership         OwnershipInfo `json:"ownership"`
 	InjuryStatus      string        `json:"injuryStatus"`
 	IsActive          bool          `json:"isActive"`
+	LineupSlotId      *int          `json:"lineupSlotId"`
+	LineupSlot        string        `json:"lineupSlot"`
 }
 
 type CleanFreeAgent struct {
@@ -136,6 +138,7 @@ type roster struct {
 type rosterEntry struct {
 	PlayerID        int             `json:"playerId"`
 	PlayerPoolEntry playerPoolEntry `json:"playerPoolEntry"`
+	LineupSlotId    *int            `json:"lineupSlotId"`
 }
 
 type playerPoolEntry struct {

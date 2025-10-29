@@ -308,7 +308,7 @@ func (c *Client) FetchFreeAgents() (*freeAgentsData, error) {
 }
 
 func (c *Client) FetchRawFreeAgents() ([]byte, error) {
-	baseURL := fmt.Sprintf("%d/seasons/%d/segments/0/leagues/%d", c.EspnApiBaseUrl, c.Year, c.LeagueID)
+	baseURL := fmt.Sprintf("%s/seasons/%d/segments/0/leagues/%d", c.EspnApiBaseUrl, c.Year, c.LeagueID)
 
 	u, err := url.Parse(baseURL)
 	if err != nil {
