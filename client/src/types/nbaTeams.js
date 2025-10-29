@@ -11,7 +11,7 @@ const nbaTeams = [
     { abbr: "GSW", name: "Golden State Warriors" },
     { abbr: "HOU", name: "Houston Rockets" },
     { abbr: "IND", name: "Indiana Pacers" },
-    { abbr: "LAC", name: "Los Angeles Clippers" },
+    { abbr: "LAC", name: "LA Clippers" },
     { abbr: "LAL", name: "Los Angeles Lakers" },
     { abbr: "MEM", name: "Memphis Grizzlies" },
     { abbr: "MIA", name: "Miami Heat" },

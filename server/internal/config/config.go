@@ -10,54 +10,43 @@ import (
 )
 
 type Config struct {
-	Port        string
-	APIBaseURL  string
-	CORSOrigins []string
-	LogLevel    string
-	Environment string
-	LeagueID    int
-	Year        int
-	ESPNS2      string
-	SWID        string
+	Port           string
+	APIBaseURL     string
+	CORSOrigins    []string
+	LogLevel       string
+	Environment    string
+	LeagueID       int
+	Year           int
+	ESPNS2         string
+	SWID           string
+	EspnApiBaseUrl string
 }
 
 func Load() *Config {
+	// TODO change env loading when ready for prod
 	env := os.Getenv("GO_ENV")
 	if env == "" {
-		env = "development"
+		env = "dev"
 	}
 
-	// Try loading .env files from multiple possible locations
-	envFiles := []string{
-		".env." + env,
-		".env",
-		"../.env." + env,
-		"../.env",
-		"../../.env." + env,
-		"../../.env",
-	}
-
-	envLoaded := false
-	for _, envFile := range envFiles {
-		if err := godotenv.Load(envFile); err == nil {
-			envLoaded = true
-			break
+	// TODO change env loading when ready for prod
+	envFile := ".env." + env
+	if err := godotenv.Load(envFile); err != nil {
+		if err := godotenv.Load(); err != nil {
+			log.Printf("Warning: Could not load .env file: %v", err)
 		}
 	}
 
-	if !envLoaded {
-		log.Printf("Warning: Could not load .env file from any location")
-	}
-
 	config := &Config{
-		Port:        getEnv("PORT", "8080"),
-		APIBaseURL:  getEnv("API_BASE_URL", getDefaultAPIURL(env)),
-		LogLevel:    getEnv("LOG_LEVEL", getDefaultLogLevel(env)),
-		Environment: env,
-		LeagueID:    parseInt(getEnv("ESPN_LEAGUE_ID", "0")),
-		Year:        parseInt(getEnv("ESPN_SEASON_YEAR", "2026")),
-		ESPNS2:      getEnv("ESPN_S2_COOKIE", ""),
-		SWID:        getEnv("ESPN_SWID_COOKIE", ""),
+		Port:           getEnv("PORT", "8080"),
+		APIBaseURL:     getEnv("API_BASE_URL", getDefaultAPIURL(env)),
+		LogLevel:       getEnv("LOG_LEVEL", getDefaultLogLevel(env)),
+		Environment:    env,
+		LeagueID:       parseInt(getEnv("ESPN_LEAGUE_ID", "0")),
+		Year:           parseInt(getEnv("ESPN_SEASON_YEAR", "2026")),
+		ESPNS2:         getEnv("ESPN_S2_COOKIE", ""),
+		SWID:           getEnv("ESPN_SWID_COOKIE", ""),
+		EspnApiBaseUrl: getEnv("ESPN_API_BASE_URL", ""),
 	}
 
 	corsOrigins := getEnv("CORS_ORIGINS", getDefaultCORSOrigins(env))

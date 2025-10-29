@@ -44,7 +44,7 @@ server/reference/
 # Test files (keep for development but don't track in git)
 server/internal/espn/*_test.go
 server/internal/espn/espn_*_response.json
-*/test_data/
+**/test_data/
 
 # OS
 Thumbs.db

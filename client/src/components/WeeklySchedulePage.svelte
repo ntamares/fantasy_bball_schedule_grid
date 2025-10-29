@@ -7,6 +7,7 @@
   import { buildScheduleGrid } from "../utils/build_grid.js";
   import { formatDateHeaders } from "../utils/format_date_headers.js";
   import { getTeamGameCount } from "../utils/team_game_count.js";
+  import FantasyTeamRosterSelection from "./FantasyTeamRosterSelection.svelte";
 
   let scheduleData = $state(null);
   let gameDates = $state(null);
@@ -48,5 +49,6 @@
   {loading}
   {error}
 />
+<FantasyTeamRosterSelection />
 
 <style></style>

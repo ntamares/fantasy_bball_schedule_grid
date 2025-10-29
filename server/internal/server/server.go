@@ -20,6 +20,8 @@ func setupRoutes() *http.ServeMux {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/api/schedule", handlers.GetWeeklyScheduleHandler)
 	mux.HandleFunc("/api/gameDates", handlers.GetGameDatesHandler)
+	mux.HandleFunc("/api/fantasyTeamRosters", handlers.GetFantasyTeamRostersHandler)
+	mux.HandleFunc("/api/freeAgents", handlers.GetFreeAgentsHandler)
 
 	return mux
 }

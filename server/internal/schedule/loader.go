@@ -34,7 +34,8 @@ func FetchGameDates() []time.Time {
 }
 
 func FetchWeeklySchedule() ([]models.Game, error) {
-	data, err := os.ReadFile("../data/nba_schedule_2025_2026.json")
+	path := os.Getenv("SCHEDULE_JSON_PATH")
+	data, err := os.ReadFile(path)
 	if err != nil {
 		log.Printf("Error loading JSON: %v", err)
 		return nil, fmt.Errorf("failed to load JSON: %w", err)

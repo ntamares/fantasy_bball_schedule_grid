@@ -8,11 +8,10 @@ import (
 func GetFantasyTeamRosters() (*espn.RosterResponse, error) {
 	cfg := config.Load()
 
-	client := espn.NewPrivateClient(
+	client := espn.NewClient(
 		cfg.LeagueID,
 		cfg.Year,
-		cfg.ESPNS2,
-		cfg.SWID,
+		cfg.EspnApiBaseUrl,
 	)
 
 	return client.FetchFantasyTeamRostersClean()
